@@ -4,6 +4,11 @@ from numpy.linalg import matrix_power
 # Main function checking type of a matrix
 def check_matrix_type(A):
     d = A.ndim
+    # Check for Real or Complex
+    check_real(A)
+    check_complex(A)
+    # Check for Null
+    check_null(A)
     # If it is 1-dimensional matrix,
     # check for Singleton or Row matrix
     if d == 1:
@@ -16,30 +21,26 @@ def check_matrix_type(A):
             check_column(A) 
             # Note: Column matrix is considered 2-dimensional
         else:
-            check_null(A)
-            # Check for Real or Complex
-            check_real(A)
-            if check_complex(A):
-                check_unitary(A)
-            
+            # Check for Rectangular or Square
             check_rect(A)
             # Many types require the matrix to be a Square Matrix
-            if check_square(A):
+            if check_square(A) and np.any(A):
                 if check_diag(A):
                     check_identity(A)
                     check_scalar(A)
-                elif not check_null(A):
-                    check_strict_tri(A)
                 else:
                     check_tri(A)
+                    check_strict_tri(A)  
                 # Check for Symmetric or Skew-symmetric
                 check_symmetric(A)
                 check_skew_symc(A)
                 # Check for special types
-                check_involutary(A)
+                check_involutory(A)
                 check_idempotent(A)
                 check_nilpotent(A)
                 check_orthogonal(A)
+                if np.iscomplexobj(A):
+                    check_unitary(A)
 
 # Functions for individual types of matrices
 def check_singleton(A):
@@ -176,12 +177,12 @@ def check_skew_symc(A):
     else:
         return False
 
-def check_involutary(A):
-    # Checks for Involutary Matrix
+def check_involutory(A):
+    # Checks for involutory Matrix
     m = np.shape(A)[0]
     A_sq = np.matmul(A,A)
     if np.array_equal(A_sq,np.eye(m)):
-        print('Involutary Matrix')
+        print('involutory Matrix')
         return True
     else:
         return False
