@@ -2,230 +2,142 @@
 # for catching all the edge cases
 
 import numpy as np
-from numpy.linalg import matrix_power
 
-# Main function checking type of a matrix
 def check_matrix_type(A):
     d = A.ndim
-    # Check for Real or Complex
-    check_real(A)
-    check_complex(A)
-    # Check for Null
-    check_null(A)
-    # If it is 1-dimensional matrix,
-    # check for Singleton or Row matrix
-    if d == 1:
-        check_singleton(A)
-        if A.size > 1:
-            check_row(A)
-    # If it is 2-dimensional matrix
-    elif d > 1: 
-        if A.shape[1] == 1:
-            check_column(A) 
+    if is_real(A):
+        print('Real Matrix')
+    if is_complex(A):
+        print('Complex Matrix')
+        if is_unitary(A):
+            print('Unitary Matrix')
+    if is_null(A):
+        print('Zero or Null Matrix')
+    if is_row(A):
+        print('Row Matrix')
+
+    if d == 0:
+        print('You have entered a scalar value (a zero-dimensional matrix).')
+    elif is_singleton(A):
+            print('Singleton Matrix')
+    elif d == 2 and np.shape(A)[0] != 1: 
+        if is_column(A):
+            print('Column Matrix') 
             # Note: Column matrix is considered 2-dimensional
         else:
-            # Check for Rectangular or Square
-            check_rect(A)
+            if is_rect(A):
+                print('Rectangular Matrix')
             # Many types require the matrix to be a Square Matrix
-            if check_square(A) and np.any(A):
-                if check_diag(A):
-                    check_identity(A)
-                    check_scalar(A)
+            if is_square(A) and np.any(A):
+                print('Square Matrix')
+                if is_diag(A):
+                    print('Diagonal Matrix')
+                    if is_scalar(A):
+                        print('Scalar Matrix')
+                        if is_identity(A):
+                            m = np.shape(A)[0]
+                            print(f'Identity Matrix of order {m}')
                 else:
-                    check_tri(A)
-                    check_strict_tri(A)  
-                # Check for Symmetric or Skew-symmetric
-                check_symmetric(A)
-                check_skew_symc(A)
-                # Check for special types
-                check_involutory(A)
-                check_idempotent(A)
-                check_nilpotent(A)
-                check_orthogonal(A)
-                if np.iscomplexobj(A):
-                    check_unitary(A)
+                    if is_upper_tri(A):
+                        print('Upper Triangular Matrix')
+                    if is_lower_tri(A):
+                        print('Lower Triangular Matrix')
+                    if is_strict_tri(A):
+                        print('Strictly Triangular Matrix')
+                
+                if is_symmetric(A):
+                    print('Symmetric Matrix')
+                elif is_skew_symc(A):
+                    print('Skew-symmetric Matrix')
+
+                if is_involutory(A):
+                    print('Involutory Matrix')
+                if is_idempotent(A):
+                    print('Idempotent Matrix')
+                if is_nilpotent(A):
+                    print('Nilpotent Matrix')
+                if is_orthogonal(A):
+                    print('Orthogonal Matrix')
 
 # Functions for individual types of matrices
-def check_singleton(A):
-    # Checks for Singleton Matrix
-    s = np.size(A)
-    if (s==1):
-        print('Singleton Matrix')
-        return True
-    else:
-        return False
+def is_singleton(A):
+    return np.size(A)==1
 
-def check_row(A):
-    # Checks for Row Matrix
-    s = np.size(A)
-    p = np.size(np.shape(A))
-    if (p==1) and (s>1):
-        print('Row Matrix')
-        return True
-    else:
-        return False
+def is_row(A):
+    return (np.size(np.shape(A))==1 or np.shape(A)[0]==1) and np.size(A)>1
 
-def check_column(A):
-    # Checks for Column Matrix
-    (m,n) = np.shape(A)
-    if (m>1) and (n==1):
-        print('Column Matrix')
-        return True
-    else:
-        return False
+def is_column(A):
+    return np.shape(A)[0]>1 and np.shape(A)[1]==1
 
-def check_rect(A):
-    # Checks for Rectangular Matrix
-    (m,n) = np.shape(A)
-    if not(m==n):
-        print('Rectangular Matrix')
-        return True
-    else:
-        return False
+def is_rect(A):
+    return not np.shape(A)[0]==np.shape(A)[1]
 
-def check_square(A):
-    # Checks for Square Matrix
-    (m,n) = np.shape(A)
-    if (m==n):
-        print('Square Matrix')
-        return True
-    else:
-        return False
+def is_square(A):
+    return np.shape(A)[0]==np.shape(A)[1]
 
-def check_null(A):
-    # Checks for Null or Zero Matrix
-    if not np.any(A):
-        print('Null Matrix')
-        return True
-    else:
-        return False
+def is_null(A):
+    return not np.any(A)
 
-def check_real(A):
-    # Checks for Real Matrix
-    if np.isrealobj(A):
-        print('Real Matrix')
-        return True
-    else:
-        return False
+def is_real(A):
+    return np.isrealobj(A)
 
-def check_complex(A):
-    # Checks for Complex Matrix
-    if np.iscomplexobj(A):
-        print('Complex Matrix')
-        return True
-    else:
-        return False
+def is_complex(A):
+    return np.iscomplexobj(A)
 
-def check_diag(A):
-    # Checks for Diagonal Matrix
-    if np.allclose(A,np.diag(np.diagonal(A))):
-        print('Diagonal Matrix')
-        return True
-    else:
-        return False
+def is_diag(A):
+    return np.allclose(A,np.diag(np.diagonal(A)))
 
-def check_scalar(A):
-    # Checks for Scalar Matrix
-    if np.allclose(A,np.diag(np.diagonal(A))) and \
-       (len(np.unique(np.diagonal(A)))==1):
-        print('Scalar Matrix')
-        return True
-    else:
-        return False
+def is_scalar(A):
+    return np.allclose(A,np.diag(np.diagonal(A))) and \
+       len(np.unique(np.diagonal(A)))==1
 
-def check_identity(A):
-    # Checks for Identity Matrix
-    m = np.shape(A)[0]
-    if np.allclose(A,np.diag(np.diagonal(A))) and \
-       (len(np.unique(np.diagonal(A)))==1) and \
-        A[0,0]==1:
-        print(f'Identity Matrix of order {m}')
-        return True
-    else:
-        return False
+def is_identity(A):
+    return np.allclose(A,np.diag(np.diagonal(A))) and \
+       len(np.unique(np.diagonal(A)))==1 and \
+        A[0,0]==1
 
-def check_tri(A):
-    # Checks for Triangular Matrix
-    if np.allclose(A,np.triu(A)):
-        print('Upper Triangular Matrix')
-    elif np.allclose(A,np.tril(A)):
-        print('Lower Triangular Matrix')
-        return True
-    else:
-        return False
+def is_upper_tri(A):
+    return np.allclose(A,np.triu(A))
 
-def check_strict_tri(A):
-    # Checks for Strict Triangular Matrix
+def is_lower_tri(A):
+    return np.allclose(A,np.tril(A))
+
+def is_strict_tri(A):
     B = np.copy(A)
     np.fill_diagonal(B,0)
-    if np.allclose(A,B):
-        print('Strictly Triangular Matrix')
-        return True
-    else:
-        return False
+    return np.allclose(A,B)
 
-def check_symmetric(A):
-    # Checks for Symmetric Matrix
-    if np.allclose(A,A.T):
-        print('Symmetric Matrix')
-        return True
-    else:
-        return False
+def is_symmetric(A):
+    return np.allclose(A,A.T)
 
-def check_skew_symc(A):
-    # Checks for Skew-symmetric Matrix
-    if np.allclose(-A,A.T):
-        print('Skew-symmetric Matrix')
-        return True
-    else:
-        return False
+def is_skew_symc(A):
+    return np.allclose(-A,A.T)
 
-def check_involutory(A):
-    # Checks for involutory Matrix
+def is_involutory(A):
     m = np.shape(A)[0]
     A_sq = np.matmul(A,A)
-    if np.allclose(A_sq,np.eye(m)):
-        print('involutory Matrix')
-        return True
-    else:
-        return False
+    return np.allclose(A_sq,np.eye(m))
 
-def check_idempotent(A):
-    # Checks for Idempotent Matrix
+def is_idempotent(A):
     A_sq = np.matmul(A,A)
-    if np.allclose(A,A_sq):
-        print('Idempotent Matrix')
-        return True
-    else:
-        return False
+    return np.allclose(A,A_sq)
 
-def check_nilpotent(A):
-    # Checks for Nilpotent Matrix
+def is_nilpotent(A):
     m = np.shape(A)[0]
     for power in range(2,11):
-        A_pow = matrix_power(A,power)
+        A_pow = np.linalg.matrix_power(A,power)
         if np.allclose(np.zeros([m,m]),A_pow):
             print(f'Nilpotent Matrix with index {power}')
-            return True    
+            return True
         elif power==10:
             return False
         else:
             continue
 
-def check_orthogonal(A):
-    # Checks for Orthogonal Matrix
+def is_orthogonal(A):
     m = np.shape(A)[0]
-    if np.allclose(np.matmul(A,A.T),np.eye(m)):
-        print('Orthogonal Matrix')
-        return True
-    else:
-        return False
+    return np.allclose(np.matmul(A,A.T),np.eye(m))
 
-def check_unitary(A):
-    # Checks for Unitary Matrix
+def is_unitary(A):
     m = np.shape(A)[0]
-    if np.allclose(np.matmul(A,np.conj(A.T)),np.eye(m)):
-        print('Unitary Matrix')
-        return True
-    else:
-        return False
+    return np.allclose(np.matmul(A,np.conj(A.T)),np.eye(m))
