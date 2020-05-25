@@ -9,8 +9,7 @@ def check_matrix_type(A):
         print('Real Matrix')
     if is_complex(A):
         print('Complex Matrix')
-        if is_unitary(A):
-            print('Unitary Matrix')
+
     if is_null(A):
         print('Zero or Null Matrix')
     if is_row(A):
@@ -55,10 +54,13 @@ def check_matrix_type(A):
                 if is_idempotent(A):
                     print('Idempotent Matrix')
                 if is_nilpotent(A):
-                    print('Nilpotent Matrix')
+                    k = nilpotence_index(A)
+                    print(f'Nilpotent Matrix with index {k}')
                 if is_orthogonal(A):
                     print('Orthogonal Matrix')
-
+                if is_complex(A):
+                    if is_unitary(A):
+                        print('Unitary Matrix')
 # Functions for individual types of matrices
 def is_singleton(A):
     return np.size(A)==1
@@ -127,12 +129,21 @@ def is_nilpotent(A):
     for power in range(2,11):
         A_pow = np.linalg.matrix_power(A,power)
         if np.allclose(np.zeros([m,m]),A_pow):
-            print(f'Nilpotent Matrix with index {power}')
             return True
         elif power==10:
             return False
         else:
             continue
+
+def nilpotence_index(A):
+    if is_nilpotent(A):
+        m = np.shape(A)[0]
+        power = 2
+        while not np.allclose(np.zeros([m,m]),np.linalg.matrix_power(A,power)):
+            power += 1
+        return power
+    else:
+        print('Input is not a Nilpotent Matrix')
 
 def is_orthogonal(A):
     m = np.shape(A)[0]
