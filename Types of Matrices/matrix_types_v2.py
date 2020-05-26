@@ -126,24 +126,24 @@ def is_idempotent(A):
 
 def is_nilpotent(A):
     m = np.shape(A)[0]
-    for power in range(2,11):
-        A_pow = np.linalg.matrix_power(A,power)
-        if np.allclose(np.zeros([m,m]),A_pow):
+    O = np.zeros([m,m])
+    A_pow = A
+    for power in range(1,m+1):
+        if np.allclose(O,A_pow):
             return True
-        elif power==10:
-            return False
-        else:
-            continue
+        A_pow = A_pow @ A
+    return False
 
 def nilpotence_index(A):
-    if is_nilpotent(A):
-        m = np.shape(A)[0]
-        power = 2
-        while not np.allclose(np.zeros([m,m]),np.linalg.matrix_power(A,power)):
-            power += 1
-        return power
-    else:
-        print('Input is not a Nilpotent Matrix')
+    m = np.shape(A)[0]
+    O = np.zeros([m,m])
+    A_pow = A
+    for power in range(1,m+1):
+        if np.allclose(O,A_pow):
+            return power
+        A_pow = A_pow @ A
+    print('Input is not a Nilpotent Matrix')
+        
 
 def is_orthogonal(A):
     m = np.shape(A)[0]
