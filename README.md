@@ -1,5 +1,7 @@
 # Linear-Algebra-Using-Python
 Linear Algebra Using Python
+- Introduction to Matrices 
+https://www.codeformech.com/intro-to-matrices-linear-algebra-using-python/
 - Types of Matrices 
 https://www.codeformech.com/types-of-matrices-linear-algebra-using-python/
 - Matrix Operations
